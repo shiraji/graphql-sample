@@ -1,0 +1,20 @@
+type Query {
+    # API Version
+    version: String!
+}
+
+type Task {
+    id: ID!
+    name: String!
+    desc: String!
+}
+
+type Employee {
+    id: ID!
+    name: String!
+    tasks: [Task]!
+}
+
+extend type Query {
+    getEmployee(id: ID!) : Employee
+}
