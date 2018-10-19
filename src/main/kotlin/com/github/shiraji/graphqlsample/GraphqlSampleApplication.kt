@@ -30,7 +30,7 @@ class EmployeeDao {
             Employee(id = 2, name = "bar")
     )
 
-    fun getEmployee(id: Int) = data.firstOrNull { it.id == id }
+    fun getEmployee(id: Int) = data.firstOrNull { it.id == id } ?: throw NotFoundException("No $id found!")
 }
 
 @Component
