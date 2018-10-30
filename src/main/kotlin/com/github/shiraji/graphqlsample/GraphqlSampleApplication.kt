@@ -5,6 +5,7 @@ import com.coxautodev.graphql.tools.GraphQLResolver
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 
 @SpringBootApplication
 class GraphqlSampleApplication
@@ -30,19 +31,28 @@ class EmployeeDao {
             Employee(id = 2, name = "bar")
     )
 
-    fun getEmployee(id: Int) = data.firstOrNull { it.id == id } ?: throw NotFoundException("No $id found!")
+    fun getEmployee(id: Int) = data.firstOrNull { it.id == id }
 }
 
-@Component
-class TaskDao {
+interface TaskRepository {
+    fun findBy(employeeId: Int): List<Task>
+}
+
+@Repository
+class JdbcTaskRepository : TaskRepository {
     private val data = mutableListOf(
             Task(id = 1, name = "foo task", desc = "do foo!", employeeId = 1),
             Task(id = 2, name = "bar task", desc = "do bar!", employeeId = 1),
             Task(id = 3, name = "bar task2", desc = "do bar!!", employeeId = 2)
     )
 
-    fun getTask(id: Int) = data.firstOrNull { it.id == id }
-    fun getTasksByEmployee(employeeId: Int) = data.filter { it.employeeId == employeeId }
+    override fun findBy(employeeId: Int) = data.filter { it.employeeId == employeeId }
+
+}
+
+@Component
+class TaskDao(val repo: TaskRepository) {
+    fun getTasksByEmployee(employeeId: Int) = repo.findBy(employeeId)
 }
 
 @Component
